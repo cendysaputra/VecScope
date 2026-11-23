@@ -1,0 +1,89 @@
+{
+  "task": "word_similarity",
+  "date": "2026-11-23T11:26:10Z",
+  "libraries": {
+    "gensim": "4.4.0",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1"
+  },
+  "paper_baseline": {
+    "model": "glove-wiki-gigaword-300",
+    "dataset": "wordsim353",
+    "paper": "Pennington et al. (2014) Table 3",
+    "spearman_100": 65.8
+  },
+  "models": {
+    "glove-wiki-gigaword-50": {
+      "dim": 50,
+      "vocab_size": 400000,
+      "wordsim353": {
+        "total_pairs": 353,
+        "evaluated_pairs": 353,
+        "skipped_oov": 0,
+        "oov_percent": 0.0,
+        "spearman_raw": 0.5033,
+        "spearman_raw_100": 50.3,
+        "spearman_paper_norm": 0.567,
+        "spearman_paper_norm_100": 56.7
+      },
+      "simlex999": {
+        "total_pairs": 999,
+        "evaluated_pairs": 999,
+        "skipped_oov": 0,
+        "oov_percent": 0.0,
+        "spearman_raw": 0.2646,
+        "spearman_raw_100": 26.5,
+        "spearman_paper_norm": 0.2923,
+        "spearman_paper_norm_100": 29.2
+      }
+    },
+    "glove-wiki-gigaword-100": {
+      "dim": 100,
+      "vocab_size": 400000,
+      "wordsim353": {
+        "total_pairs": 353,
+        "evaluated_pairs": 353,
+        "skipped_oov": 0,
+        "oov_percent": 0.0,
+        "spearman_raw": 0.5327,
+        "spearman_raw_100": 53.3,
+        "spearman_paper_norm": 0.5943,
+        "spearman_paper_norm_100": 59.4
+      },
+      "simlex999": {
+        "total_pairs": 999,
+        "evaluated_pairs": 999,
+        "skipped_oov": 0,
+        "oov_percent": 0.0,
+        "spearman_raw": 0.2975,
+        "spearman_raw_100": 29.8,
+        "spearman_paper_norm": 0.3295,
+        "spearman_paper_norm_100": 32.9
+      }
+    },
+    "glove-wiki-gigaword-300": {
+      "dim": 300,
+      "vocab_size": 400000,
+      "wordsim353": {
+        "total_pairs": 353,
+        "evaluated_pairs": 353,
+        "skipped_oov": 0,
+        "oov_percent": 0.0,
+        "spearman_raw": 0.6085,
+        "spearman_raw_100": 60.9,
+        "spearman_paper_norm": 0.6581,
+        "spearman_paper_norm_100": 65.8
+      },
+      "simlex999": {
+        "total_pairs": 999,
+        "evaluated_pairs": 999,
+        "skipped_oov": 0,
+        "oov_percent": 0.0,
+        "spearman_raw": 0.3705,
+        "spearman_raw_100": 37.1,
+        "spearman_paper_norm": 0.408,
+        "spearman_paper_norm_100": 40.8
+      }
+    }
+  }
+}

@@ -116,14 +116,14 @@ VecScope/
 ## 6. Milestones
 
 - [x] **v1:** all text features from section 2. English, GloVe 50d, local Streamlit UI.
-  - [ ] Text evaluation: analogy accuracy and word similarity for GloVe 50d / 100d / 300d (section 8).
+  - [x] Text evaluation: analogy accuracy and word similarity for GloVe 50d / 100d / 300d (section 8).
 - **v2:**
   - [x] CLIP image features (strips, similarity, search, mixed scatter).
   - [x] Modern tokenizers (`cl100k_base`, `o200k_base`).
   - [x] UMAP option (needs `pip install umap-learn`).
   - [ ] Sentence embeddings with Sentence Transformers.
   - [ ] Early Indonesian support.
-  - [ ] Image evaluation: CLIP zero-shot accuracy on CIFAR-10 test; Recall@1 / Recall@5 optional (section 8).
+  - [x] Image evaluation: CLIP zero-shot accuracy on CIFAR-10 test; Recall@1 / Recall@5 optional (section 8).
 - [ ] **v3:**
   - Better Indonesian embeddings, e.g. [IndoBERT](https://huggingface.co/indobenchmark/indobert-base-p1) or a multilingual Sentence Transformers model. Example analogy: `raja - pria + wanita`.
   - OpenAI's original CLIP is strongest in English. For Indonesian queries, try `sentence-transformers/clip-ViT-B-32-multilingual-v1`.

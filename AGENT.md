@@ -14,6 +14,7 @@ src/embeddings.py   GloVe loading and lookup
 src/similarity.py   cosine, neighbours, analogy
 src/visualize.py    Plotly figures
 src/clip.py         CLIP embeddings
+eval/               analogy, similarity, CLIP CIFAR-10 benchmarks
 scripts/            samples, evidence, screenshots
 tests/              pytest, fixed examples
 ```
@@ -36,6 +37,12 @@ python -m pytest -q
 
 ```bash
 python scripts/evidence.py
+```
+
+```bash
+python eval/analogy.py
+python eval/word_similarity.py
+python eval/clip_cifar10.py
 ```
 
 ```bash

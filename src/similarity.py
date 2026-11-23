@@ -18,6 +18,11 @@ def l2_normalize(x: np.ndarray, axis: int = -1) -> np.ndarray:
     return x / np.clip(np.linalg.norm(x, axis=axis, keepdims=True), 1e-12, None)
 
 
+def center_unit(x: np.ndarray) -> np.ndarray:
+    # Center, renormalize
+    return l2_normalize(x - x.mean(axis=0, keepdims=True), axis=1)
+
+
 def cosine(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.dot(l2_normalize(a), l2_normalize(b)))
 
@@ -27,12 +32,26 @@ def cosine_matrix(a: np.ndarray, b: np.ndarray | None = None) -> np.ndarray:
     return a @ (a if b is None else l2_normalize(b)).T
 
 
+def pairwise_scores(words: list[str], sim: np.ndarray) -> list[dict]:
+    # Upper-triangle pairs
+    i, j = np.triu_indices(len(words), k=1)
+    scores = sim[i, j]
+    order = np.argsort(-scores)
+    return [{"word A": words[int(i[k])], "word B": words[int(j[k])], "cosine": round(float(scores[k]), 4)} for k in order]
+
+
 def _check_vocab(kv, words: list[str]) -> list[str]:
     words = [w for w in map(normalize, words) if w]
     missing = [w for w in words if w not in kv.key_to_index]
     if missing:
         raise OOVError(missing)
     return words
+
+
+def unit_vectors(kv, words: list[str]) -> np.ndarray:
+    # Single unit gather
+    idx = [kv.key_to_index[w] for w in _check_vocab(kv, words)]
+    return kv.get_normed_vectors()[idx] if idx else np.empty((0, kv.vector_size), np.float32)
 
 
 def nearest(kv, word: str, topn: int = 10) -> list[tuple[str, float]]:
@@ -49,13 +68,11 @@ def analogy(kv, positive: list[str], negative: list[str], topn: int = 10) -> lis
 
 def analogy_vector(kv, positive: list[str], negative: list[str]) -> np.ndarray:
     # 3CosAdd raw vector
-    pos, neg = _check_vocab(kv, positive), _check_vocab(kv, negative)
-    v = np.zeros(kv.vector_size, dtype=np.float32)
-    for w in pos:
-        v += kv.get_vector(w, norm=True)
-    for w in neg:
-        v -= kv.get_vector(w, norm=True)
-    return v
+    pos = unit_vectors(kv, positive)
+    neg = unit_vectors(kv, negative)
+    if len(pos) == 0:
+        raise ValueError("Need at least one positive word.")
+    return pos.sum(axis=0) - neg.sum(axis=0)
 
 
 def parse_analogy(expr: str) -> tuple[list[str], list[str]]:

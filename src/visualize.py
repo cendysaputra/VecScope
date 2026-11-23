@@ -137,20 +137,21 @@ def scatter_2d(
     mode: str = "light",
 ) -> go.Figure:
     pal = palette(mode)
-    groups = groups or ["words"] * len(labels)
+    groups_arr = np.asarray(groups or ["words"] * len(labels))
+    labels_arr = np.asarray(labels)
     symbols = symbols or {}
     fig = go.Figure()
-    for k, g in enumerate(dict.fromkeys(groups)):
-        idx = [i for i, gg in enumerate(groups) if gg == g]
+    for k, g in enumerate(dict.fromkeys(groups_arr.tolist())):
+        mask = groups_arr == g
         # Fixed slot order
         color = pal["categorical"][k] if k < len(pal["categorical"]) else None
         fig.add_trace(
             go.Scatter(
-                x=points[idx, 0],
-                y=points[idx, 1],
+                x=points[mask, 0],
+                y=points[mask, 1],
                 mode="markers+text",
                 name=g,
-                text=[labels[i] for i in idx],
+                text=labels_arr[mask],
                 textposition="top center",
                 textfont=dict(color=pal["ink"], size=12),
                 marker=dict(size=11, color=color, symbol=symbols.get(g, "circle"), line=dict(width=2, color=pal["surface"])),

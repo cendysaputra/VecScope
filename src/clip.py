@@ -5,23 +5,28 @@ from pathlib import Path
 
 import numpy as np
 
+from .similarity import l2_normalize
+
 DEFAULT_CLIP = "openai/clip-vit-base-patch32"
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 
 
 @lru_cache(maxsize=None)
-def load_clip(name: str = DEFAULT_CLIP):
+def _load_clip(name: str):
     from transformers import CLIPModel, CLIPProcessor
 
     model = CLIPModel.from_pretrained(name).eval()
     return model, CLIPProcessor.from_pretrained(name)
 
 
+def load_clip(name: str = DEFAULT_CLIP):
+    return _load_clip(name)
+
+
 def _unit(out) -> np.ndarray:
     # transformers v4/v5
     t = out if hasattr(out, "shape") else out.pooler_output
-    v = t.detach().cpu().float().numpy()
-    return v / np.clip(np.linalg.norm(v, axis=-1, keepdims=True), 1e-12, None)
+    return l2_normalize(t.detach().cpu().float().numpy(), axis=-1)
 
 
 def embed_texts(texts: list[str], name: str = DEFAULT_CLIP) -> np.ndarray:
@@ -37,7 +42,8 @@ def embed_images(images: list, name: str = DEFAULT_CLIP) -> np.ndarray:
     import torch
 
     model, processor = load_clip(name)
-    inputs = processor(images=[im.convert("RGB") for im in images], return_tensors="pt")
+    rgb = [im if getattr(im, "mode", None) == "RGB" else im.convert("RGB") for im in images]
+    inputs = processor(images=rgb, return_tensors="pt")
     with torch.inference_mode():
         return _unit(model.get_image_features(pixel_values=inputs["pixel_values"]))
 

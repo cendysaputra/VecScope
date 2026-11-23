@@ -59,7 +59,9 @@ Models download on first use and are cached outside the repo:
 
 | Model | Size | Cache |
 | --- | --- | --- |
-| `glove-wiki-gigaword-50` | ~66 MB | `~/gensim-data` |
+| `glove-wiki-gigaword-50` | ~66 MB | `~/gensim-data` (plus `.kv` mmap cache) |
+| `glove-wiki-gigaword-100` | ~128 MB | `~/gensim-data` (plus `.kv` mmap cache) |
+| `glove-wiki-gigaword-300` | ~376 MB | `~/gensim-data` (plus `.kv` mmap cache) |
 | `bert-base-uncased` tokenizer | <1 MB | `~/.cache/huggingface` |
 | `tiktoken` encodings | 1–4 MB each | tiktoken cache |
 | `openai/clip-vit-base-patch32` | ~600 MB | `~/.cache/huggingface` |
@@ -153,6 +155,40 @@ In the mixed map, all text sits on one side and all images on the other. This is
 
 ![CLIP map with modality gap closed](docs/screenshots/clip-gap-closed.png)
 
+## Evaluation
+
+Reproducible benchmark scripts live in `eval/` and write JSON logs with library versions and timestamps to `eval/results/`.
+
+### Text: GloVe 50d vs 100d vs 300d
+
+Run `python eval/analogy.py` ([`eval/results/analogy.json`](eval/results/analogy.json)) and `python eval/word_similarity.py` ([`eval/results/word_similarity.json`](eval/results/word_similarity.json)):
+
+| Model | Size | Dim | Analogy Semantic | Analogy Syntactic | Analogy Total (400k / Gensim 300k) | WordSim-353 Spearman (raw / Table 3 norm) | SimLex-999 Spearman (raw / norm) | OOV skipped |
+|---|---|---|---|---|---|---|---|---|
+| `glove-wiki-gigaword-50` | ~66 MB | 50 | 48.46% | 44.36% | 46.22% / 46.37% | 0.503 (50.3%) / 0.567 (56.7%) | 0.265 (26.5%) / 0.292 (29.2%) | 0/19,544 · 0/353 · 0/999 |
+| `glove-wiki-gigaword-100` | ~128 MB | 100 | 65.34% | 61.26% | 63.11% / 63.30% | 0.533 (53.3%) / 0.594 (59.4%) | 0.298 (29.8%) / 0.329 (32.9%) | 0/19,544 · 0/353 · 0/999 |
+| `glove-wiki-gigaword-300` | ~376 MB | 300 | 77.44% | 67.00% | 71.74% / 71.95% | 0.609 (60.9%) / 0.658 (65.8%) | 0.371 (37.1%) / 0.408 (40.8%) | 0/19,544 · 0/353 · 0/999 |
+| GloVe paper ([Pennington et al., 2014](https://nlp.stanford.edu/pubs/glove.pdf), 6B 300d) | — | 300 | 77.4% (Table 2) | 67.0% (Table 2) | 71.7% (Table 2) | 65.8% (Table 3) | — | 0 |
+
+- **Vocabulary cutoff.** Evaluating across the full 400,000-word vocabulary covers all 19,544 Google analogy questions (`questions-words.txt`, 8,869 semantic + 10,675 syntactic, 0 OOV) and matches Table 2 of Pennington et al. (2014) on 300d (`77.44%` semantic, `67.00%` syntactic, `71.74%` total vs paper `77.4%` / `67.0%` / `71.7%`). Gensim's default `restrict_vocab=300000` skips 58 questions and yields `71.95%`.
+- **Feature normalization on WordSim-353.** Section 4.3 (Table 3) of Pennington et al. (2014) normalizes each feature dimension across the 400,000-word vocabulary before computing cosine similarity. With feature normalization, `glove-wiki-gigaword-300` scores `65.8%` ($100 \times \rho$, $\rho = 0.6581$) on WordSim-353, matching Table 3 (`65.8`). Raw unnormalized cosine scores `60.9%` ($\rho = 0.6085$).
+- **Size vs quality trade-off.** Dropping from 300d (~376 MB) to 50d (~66 MB, 5.7× smaller) trades 25.52 percentage points of total analogy accuracy (`71.74%` → `46.22%`) and 9.1 points of WordSim-353 Spearman correlation (`65.8%` → `56.7%`), while remaining compact enough for 50-column visual strips.
+
+### Images: CLIP ViT-B/32 zero-shot on CIFAR-10 test
+
+Run `python eval/clip_cifar10.py` ([`eval/results/clip_cifar10.json`](eval/results/clip_cifar10.json)) on all 10,000 CIFAR-10 test images (32×32 upscaled to 224×224, no fine-tuning):
+
+| Method / Baseline | CIFAR-10 test accuracy | Details |
+|---|---|---|
+| Chance level | 10.00% | 10 balanced classes (1,000 images each) |
+| CLIP ViT-B/32, single prompt (`"a photo of a {label}."`) | 88.30% (8,830 / 10,000) | `openai/clip-vit-base-patch32`, zero-shot |
+| CLIP ViT-B/32, 18-prompt ensemble | 89.83% (8,983 / 10,000) | OpenAI CIFAR-10 prompt templates, zero-shot |
+| CLIP paper ViT-B/32 ([Radford et al., 2021](https://arxiv.org/abs/2103.00020), Table 10 / Table 11) | 89.8% | Reported zero-shot benchmark in paper |
+| Supervised CNN (`cifar10-app`) | 95.71% | Trained directly on 32×32 CIFAR-10 images |
+
+- **Prompt ensembling.** Averaging unit text embeddings across OpenAI's 18 CIFAR-10 templates (including `"a blurry photo of a {label}."` and `"a low contrast photo of a {label}."` for 32×32 thumbnails) lifts zero-shot accuracy from `88.30%` to `89.83%`, matching the `89.8%` reported for ViT-B/32 in Radford et al. (2021).
+- **Sample text-to-image retrieval.** On the 7 captioned sample images (`cats.jpg`, `cat-chonk.jpg`, `bee.jpg`, `dog.png`, `baklava.jpg`, `mosque.jpg`, `robot.png`), CLIP ViT-B/32 achieves **Recall@1 = 100.00% (7/7)** and **Recall@5 = 100.00% (7/7)**.
+
 ## Project layout
 
 ```text
@@ -163,6 +199,7 @@ src/embeddings.py      GloVe loading and lookup
 src/similarity.py      cosine, nearest neighbours, analogy
 src/visualize.py       Plotly strips, heatmaps, PCA/UMAP scatter
 src/clip.py            CLIP text and image embeddings
+eval/                  analogy, word similarity, CLIP CIFAR-10 benchmarks + JSON logs
 scripts/               sample download, evidence, screenshots
 tests/                 fixed examples from the plan
 ```
@@ -175,7 +212,7 @@ tests/                 fixed examples from the plan
 
 ## Roadmap
 
-Done: everything in v1, plus CLIP, modern tiktoken encodings and the UMAP option from v2. Next: Sentence Transformers sentence embeddings, then Indonesian support (IndoBERT or a multilingual model, `raja - pria + wanita`) and a Hugging Face Spaces demo. See [PLAN.md](PLAN.md#6-milestones).
+Done: everything in v1 (including GloVe 50d / 100d / 300d analogy and word similarity evaluation), plus CLIP, modern tiktoken encodings, the UMAP option, and CLIP CIFAR-10 zero-shot evaluation from v2. Next: Sentence Transformers sentence embeddings, then Indonesian support (IndoBERT or a multilingual model, `raja - pria + wanita`) and a Hugging Face Spaces demo. See [PLAN.md](PLAN.md#6-milestones).
 
 ## Credits
 

@@ -1,0 +1,354 @@
+{
+  "task": "word_analogy",
+  "dataset": "Google analogy (questions-words.txt)",
+  "date": "2026-11-23T11:29:00Z",
+  "libraries": {
+    "gensim": "4.4.0",
+    "numpy": "2.5.5"
+  },
+  "paper_baseline": {
+    "model": "glove-wiki-gigaword-300",
+    "paper": "Pennington et al. (2014) Table 2",
+    "semantic": 77.4,
+    "syntactic": 67.0,
+    "total": 71.7
+  },
+  "models": {
+    "glove-wiki-gigaword-50": {
+      "dim": 50,
+      "vocab_size": 400000,
+      "full_vocab_400k": {
+        "restrict_vocab": 400000,
+        "total_questions": 19544,
+        "evaluated_questions": 19544,
+        "skipped_oov": 0,
+        "semantic_correct": 4298,
+        "semantic_total": 8869,
+        "semantic_accuracy": 48.46,
+        "syntactic_correct": 4735,
+        "syntactic_total": 10675,
+        "syntactic_accuracy": 44.36,
+        "total_correct": 9033,
+        "total_accuracy": 46.22,
+        "sections": {
+          "capital-common-countries": {
+            "kind": "semantic",
+            "correct": 401,
+            "total": 506,
+            "accuracy": 79.25
+          },
+          "capital-world": {
+            "kind": "semantic",
+            "correct": 3098,
+            "total": 4524,
+            "accuracy": 68.48
+          },
+          "currency": {
+            "kind": "semantic",
+            "correct": 72,
+            "total": 866,
+            "accuracy": 8.31
+          },
+          "city-in-state": {
+            "kind": "semantic",
+            "correct": 378,
+            "total": 2467,
+            "accuracy": 15.32
+          },
+          "family": {
+            "kind": "semantic",
+            "correct": 349,
+            "total": 506,
+            "accuracy": 68.97
+          },
+          "gram1-adjective-to-adverb": {
+            "kind": "syntactic",
+            "correct": 151,
+            "total": 992,
+            "accuracy": 15.22
+          },
+          "gram2-opposite": {
+            "kind": "syntactic",
+            "correct": 77,
+            "total": 812,
+            "accuracy": 9.48
+          },
+          "gram3-comparative": {
+            "kind": "syntactic",
+            "correct": 690,
+            "total": 1332,
+            "accuracy": 51.8
+          },
+          "gram4-superlative": {
+            "kind": "syntactic",
+            "correct": 321,
+            "total": 1122,
+            "accuracy": 28.61
+          },
+          "gram5-present-participle": {
+            "kind": "syntactic",
+            "correct": 439,
+            "total": 1056,
+            "accuracy": 41.57
+          },
+          "gram6-nationality-adjective": {
+            "kind": "syntactic",
+            "correct": 1375,
+            "total": 1599,
+            "accuracy": 85.99
+          },
+          "gram7-past-tense": {
+            "kind": "syntactic",
+            "correct": 585,
+            "total": 1560,
+            "accuracy": 37.5
+          },
+          "gram8-plural": {
+            "kind": "syntactic",
+            "correct": 798,
+            "total": 1332,
+            "accuracy": 59.91
+          },
+          "gram9-plural-verbs": {
+            "kind": "syntactic",
+            "correct": 299,
+            "total": 870,
+            "accuracy": 34.37
+          }
+        }
+      },
+      "gensim_default_300k": {
+        "restrict_vocab": 300000,
+        "evaluated_questions": 19486,
+        "skipped_oov": 58,
+        "semantic_accuracy": 48.8,
+        "syntactic_accuracy": 44.37,
+        "total_accuracy": 46.37
+      }
+    },
+    "glove-wiki-gigaword-100": {
+      "dim": 100,
+      "vocab_size": 400000,
+      "full_vocab_400k": {
+        "restrict_vocab": 400000,
+        "total_questions": 19544,
+        "evaluated_questions": 19544,
+        "skipped_oov": 0,
+        "semantic_correct": 5795,
+        "semantic_total": 8869,
+        "semantic_accuracy": 65.34,
+        "syntactic_correct": 6539,
+        "syntactic_total": 10675,
+        "syntactic_accuracy": 61.26,
+        "total_correct": 12334,
+        "total_accuracy": 63.11,
+        "sections": {
+          "capital-common-countries": {
+            "kind": "semantic",
+            "correct": 475,
+            "total": 506,
+            "accuracy": 93.87
+          },
+          "capital-world": {
+            "kind": "semantic",
+            "correct": 4024,
+            "total": 4524,
+            "accuracy": 88.95
+          },
+          "currency": {
+            "kind": "semantic",
+            "correct": 123,
+            "total": 866,
+            "accuracy": 14.2
+          },
+          "city-in-state": {
+            "kind": "semantic",
+            "correct": 760,
+            "total": 2467,
+            "accuracy": 30.81
+          },
+          "family": {
+            "kind": "semantic",
+            "correct": 413,
+            "total": 506,
+            "accuracy": 81.62
+          },
+          "gram1-adjective-to-adverb": {
+            "kind": "syntactic",
+            "correct": 242,
+            "total": 992,
+            "accuracy": 24.4
+          },
+          "gram2-opposite": {
+            "kind": "syntactic",
+            "correct": 163,
+            "total": 812,
+            "accuracy": 20.07
+          },
+          "gram3-comparative": {
+            "kind": "syntactic",
+            "correct": 1054,
+            "total": 1332,
+            "accuracy": 79.13
+          },
+          "gram4-superlative": {
+            "kind": "syntactic",
+            "correct": 609,
+            "total": 1122,
+            "accuracy": 54.28
+          },
+          "gram5-present-participle": {
+            "kind": "syntactic",
+            "correct": 734,
+            "total": 1056,
+            "accuracy": 69.51
+          },
+          "gram6-nationality-adjective": {
+            "kind": "syntactic",
+            "correct": 1405,
+            "total": 1599,
+            "accuracy": 87.87
+          },
+          "gram7-past-tense": {
+            "kind": "syntactic",
+            "correct": 865,
+            "total": 1560,
+            "accuracy": 55.45
+          },
+          "gram8-plural": {
+            "kind": "syntactic",
+            "correct": 959,
+            "total": 1332,
+            "accuracy": 72.0
+          },
+          "gram9-plural-verbs": {
+            "kind": "syntactic",
+            "correct": 508,
+            "total": 870,
+            "accuracy": 58.39
+          }
+        }
+      },
+      "gensim_default_300k": {
+        "restrict_vocab": 300000,
+        "evaluated_questions": 19486,
+        "skipped_oov": 58,
+        "semantic_accuracy": 65.77,
+        "syntactic_accuracy": 61.26,
+        "total_accuracy": 63.3
+      }
+    },
+    "glove-wiki-gigaword-300": {
+      "dim": 300,
+      "vocab_size": 400000,
+      "full_vocab_400k": {
+        "restrict_vocab": 400000,
+        "total_questions": 19544,
+        "evaluated_questions": 19544,
+        "skipped_oov": 0,
+        "semantic_correct": 6868,
+        "semantic_total": 8869,
+        "semantic_accuracy": 77.44,
+        "syntactic_correct": 7152,
+        "syntactic_total": 10675,
+        "syntactic_accuracy": 67.0,
+        "total_correct": 14020,
+        "total_accuracy": 71.74,
+        "sections": {
+          "capital-common-countries": {
+            "kind": "semantic",
+            "correct": 480,
+            "total": 506,
+            "accuracy": 94.86
+          },
+          "capital-world": {
+            "kind": "semantic",
+            "correct": 4342,
+            "total": 4524,
+            "accuracy": 95.98
+          },
+          "currency": {
+            "kind": "semantic",
+            "correct": 137,
+            "total": 866,
+            "accuracy": 15.82
+          },
+          "city-in-state": {
+            "kind": "semantic",
+            "correct": 1463,
+            "total": 2467,
+            "accuracy": 59.3
+          },
+          "family": {
+            "kind": "semantic",
+            "correct": 446,
+            "total": 506,
+            "accuracy": 88.14
+          },
+          "gram1-adjective-to-adverb": {
+            "kind": "syntactic",
+            "correct": 224,
+            "total": 992,
+            "accuracy": 22.58
+          },
+          "gram2-opposite": {
+            "kind": "syntactic",
+            "correct": 222,
+            "total": 812,
+            "accuracy": 27.34
+          },
+          "gram3-comparative": {
+            "kind": "syntactic",
+            "correct": 1174,
+            "total": 1332,
+            "accuracy": 88.14
+          },
+          "gram4-superlative": {
+            "kind": "syntactic",
+            "correct": 810,
+            "total": 1122,
+            "accuracy": 72.19
+          },
+          "gram5-present-participle": {
+            "kind": "syntactic",
+            "correct": 739,
+            "total": 1056,
+            "accuracy": 69.98
+          },
+          "gram6-nationality-adjective": {
+            "kind": "syntactic",
+            "correct": 1480,
+            "total": 1599,
+            "accuracy": 92.56
+          },
+          "gram7-past-tense": {
+            "kind": "syntactic",
+            "correct": 954,
+            "total": 1560,
+            "accuracy": 61.15
+          },
+          "gram8-plural": {
+            "kind": "syntactic",
+            "correct": 1040,
+            "total": 1332,
+            "accuracy": 78.08
+          },
+          "gram9-plural-verbs": {
+            "kind": "syntactic",
+            "correct": 509,
+            "total": 870,
+            "accuracy": 58.51
+          }
+        }
+      },
+      "gensim_default_300k": {
+        "restrict_vocab": 300000,
+        "evaluated_questions": 19486,
+        "skipped_oov": 58,
+        "semantic_accuracy": 77.96,
+        "syntactic_accuracy": 67.0,
+        "total_accuracy": 71.95
+      }
+    }
+  }
+}
