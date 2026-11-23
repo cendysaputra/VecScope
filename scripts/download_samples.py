@@ -1,11 +1,4 @@
-"""Download a few public sample images into data/samples/ for the CLIP tab.
-
-Images come from the Hugging Face dataset `huggingface/documentation-images`
-(license: CC BY-NC-SA 4.0). They are NOT committed to this repo; run:
-
-    python scripts/download_samples.py
-"""
-
+# Usage: python scripts/download_samples.py
 from __future__ import annotations
 
 import sys
@@ -13,12 +6,12 @@ import urllib.request
 from pathlib import Path
 
 BASE = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/"
-# local name -> file in the dataset
+# Local -> remote
 SAMPLES = {
     "cats.jpg": "cats.jpeg",
     "cat-chonk.jpg": "pipeline-cat-chonk.jpeg",
     "bee.jpg": "cropped_bee.jpg",
-    "tiger.png": "tiger_image.png",
+    "dog.png": "image_process_dog.png",
     "baklava.jpg": "baklava.jpg",
     "mosque.jpg": "mosque.jpg",
     "robot.png": "robot.png",
@@ -40,10 +33,11 @@ def main(dest: str = "data/samples") -> int:
             continue
         print(f"get   {remote} -> {path}")
         urllib.request.urlretrieve(BASE + remote, path)
-        if Image is not None:  # shrink big photos; CLIP only sees 224x224 anyway
+        # Shrink large files
+        if Image is not None:
             with Image.open(path) as im:
                 im.thumbnail((MAX_SIDE, MAX_SIDE))
-                im.convert("RGB").save(path) if path.suffix == ".jpg" else im.save(path)
+                (im.convert("RGB") if path.suffix == ".jpg" else im).save(path)
     print(f"done: {len(SAMPLES)} images in {out}/")
     return 0
 
