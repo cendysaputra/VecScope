@@ -5,7 +5,7 @@ __pycache__/
 venv/
 .pytest_cache/
 
-# Model caches (never commit vectors / weights)
+# Model caches
 gensim-data/
 .cache/
 hf-cache/
@@ -13,11 +13,11 @@ hf-cache/
 *.bin
 *.safetensors
 
-# Sample images (downloaded by scripts/download_samples.py) and user uploads
+# Samples, uploads
 data/samples/*
 !data/samples/README.md
 uploads/
 
-# Streamlit / OS
+# Streamlit, OS
 .streamlit/secrets.toml
 .DS_Store

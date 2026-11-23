@@ -1,4 +1,4 @@
-# UI + visualisation
+# UI, plots
 streamlit>=1.40
 plotly>=5.24
 pandas>=2.2
@@ -7,16 +7,16 @@ pandas>=2.2
 tiktoken>=0.8
 transformers>=4.46
 
-# Embeddings + maths
+# Embeddings, math
 gensim>=4.3
 numpy>=1.26
 scikit-learn>=1.5
 
-# v2: CLIP (text + image)
+# CLIP (v2)
 torch>=2.4
 pillow>=10.4
 
-# Optional: UMAP projection (PCA is the default)
+# Optional UMAP
 # umap-learn>=0.5
 
 # Dev
