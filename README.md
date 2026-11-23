@@ -2,6 +2,12 @@
 
 **vector + scope**: a small Streamlit app for looking inside language models. Type a sentence and see how it gets cut into tokens, how each word becomes a list of numbers, and how those numbers capture meaning. Upload an image and see it land in the same vector space as text.
 
+![VecScope, light theme](docs/screenshots/overview.png)
+
+The app follows the system light/dark setting (switchable in the app menu):
+
+![VecScope, dark theme](docs/screenshots/overview-dark.png)
+
 ## Why
 
 "Tokens" and "embeddings" are usually explained with a diagram and a promise. VecScope lets you poke at the real thing:
@@ -151,6 +157,7 @@ In the mixed map, all text sits on one side and all images on the other. This is
 
 ```text
 app.py                 Streamlit UI
+.streamlit/config.toml light and dark theme
 src/tokenize.py        tiktoken vs BERT WordPiece
 src/embeddings.py      GloVe loading and lookup
 src/similarity.py      cosine, nearest neighbours, analogy

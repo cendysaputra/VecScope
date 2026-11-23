@@ -1,4 +1,4 @@
-// Usage: node scripts/screenshots.js [url] [outdir]
+// Usage: [DARK=1] [CLOSE_GAP=1] node scripts/screenshots.js [url] [outdir]
 const { chromium } = require('playwright');
 
 const url = process.argv[2] || 'http://localhost:8501';
@@ -15,16 +15,25 @@ const TABS = [
 
 (async () => {
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1400, height: 1000 }, deviceScaleFactor: 1 });
+  const page = await browser.newPage({
+    viewport: { width: 1400, height: 1000 },
+    deviceScaleFactor: 1,
+    colorScheme: process.env.DARK ? 'dark' : 'light',
+  });
   page.on('pageerror', (e) => console.error('pageerror', e.message));
   await page.goto(url, { waitUntil: 'networkidle' });
   await page.getByRole('tab', { name: /Tokens/ }).waitFor({ timeout: 180000 });
+  await page.getByText('19 tokens').waitFor({ timeout: 180000 });
+  await page.waitForTimeout(1500);
+  // Landing view
+  await page.screenshot({ path: `${out}/overview.png` });
+  console.log(`saved ${out}/overview.png`);
   for (const [label, file] of TABS) {
     await page.setViewportSize({ width: 1400, height: 1000 });
     await page.getByRole('tab', { name: new RegExp(label.replace(/[()]/g, '\\$&')) }).click();
     if (file === 'clip') {
       await page.getByText('Enable CLIP').click();
-      await page.getByText('Mixed 2D map').waitFor({ timeout: 600000 });
+      await page.getByText('Text and images on one map').waitFor({ timeout: 600000 });
       if (process.env.CLOSE_GAP) await page.getByText('Close the modality gap').click();
     }
     await page.waitForTimeout(2500);
