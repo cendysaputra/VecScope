@@ -168,7 +168,7 @@ tests/                 fixed examples from the plan
 
 ## Roadmap
 
-Done: everything in v1, plus CLIP, modern tiktoken encodings and the UMAP option from v2. Next: Sentence Transformers sentence embeddings, then Indonesian support (IndoBERT or a multilingual model, `raja - pria + wanita`) and a Hugging Face Spaces demo. See [PLAN.md](PLAN.md#6-milestone).
+Done: everything in v1, plus CLIP, modern tiktoken encodings and the UMAP option from v2. Next: Sentence Transformers sentence embeddings, then Indonesian support (IndoBERT or a multilingual model, `raja - pria + wanita`) and a Hugging Face Spaces demo. See [PLAN.md](PLAN.md#6-milestones).
 
 ## Credits
 
