@@ -173,3 +173,7 @@ Done: everything in v1, plus CLIP, modern tiktoken encodings and the UMAP option
 ## Credits
 
 Visual style from Jay Alammar's [The Illustrated Word2vec](https://jalammar.github.io/illustrated-word2vec/). Built on [tiktoken](https://github.com/openai/tiktoken), [Transformers](https://huggingface.co/docs/transformers), [Gensim](https://radimrehurek.com/gensim/), [GloVe](https://nlp.stanford.edu/projects/glove/) and [CLIP](https://huggingface.co/openai/clip-vit-base-patch32).
+
+## License
+
+[MIT](LICENSE) © 2026 Cendy Saputra. Covers the code in this repo only. Downloaded models and sample images keep their own licenses (GloVe: PDDL, CLIP: MIT, sample images: CC BY-NC-SA 4.0).

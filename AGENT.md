@@ -67,7 +67,7 @@ node scripts/screenshots.js
 
 ## Git
 
-- Push every change to `main`.
+- Work and push on `staging` only. Never push to `main` and never create other branches; the owner merges `staging` into `main`.
 - Commit messages: one short line, imperative, under ~50 characters. Example: `Add UMAP toggle`.
 - Never commit model files, vectors, caches, sample images or user uploads (see `.gitignore`).
 - Run `python -m pytest -q` before pushing. Don't push red tests.
