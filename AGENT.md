@@ -8,11 +8,13 @@ Streamlit app that visualises tokens and embeddings: tokenizer comparison, GloVe
 
 ```text
 app.py              UI only: layout, inputs, caching
+.streamlit/         theme (light + dark)
 src/tokenize.py     tokenizers
 src/embeddings.py   GloVe loading and lookup
 src/similarity.py   cosine, neighbours, analogy
 src/visualize.py    Plotly figures
 src/clip.py         CLIP embeddings
+eval/               analogy, similarity, CLIP CIFAR-10 benchmarks
 scripts/            samples, evidence, screenshots
 tests/              pytest, fixed examples
 ```
@@ -35,6 +37,12 @@ python -m pytest -q
 
 ```bash
 python scripts/evidence.py
+```
+
+```bash
+python eval/analogy.py
+python eval/word_similarity.py
+python eval/clip_cifar10.py
 ```
 
 ```bash
@@ -71,6 +79,14 @@ node scripts/screenshots.js
 - Commit messages: one short line, imperative, under ~50 characters. Example: `Add UMAP toggle`.
 - Never commit model files, vectors, caches, sample images or user uploads (see `.gitignore`).
 - Run `python -m pytest -q` before pushing. Don't push red tests.
+
+## Design
+
+- Color is for data. UI chrome stays ink-on-paper; the accent is near-black (light) / off-white (dark).
+- Strips and cosine heatmaps use the diverging blue/gray/red scale in `src/visualize.py`; CLIP scores use the sequential blue ramp.
+- Group colors follow the fixed categorical order (blue, orange, aqua). Keep maps at 3 groups or fewer.
+- Every chart takes `mode` so light and dark get their own colors. Check both before pushing.
+- No emoji; use `:material/...:` icons.
 
 ## Data and models
 

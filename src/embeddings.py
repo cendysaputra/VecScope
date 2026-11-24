@@ -10,15 +10,31 @@ DEFAULT_MODEL = "glove-wiki-gigaword-50"
 MODELS = {
     "glove-wiki-gigaword-50": "GloVe 50d (~66 MB)",
     "glove-wiki-gigaword-100": "GloVe 100d (~128 MB)",
+    "glove-wiki-gigaword-300": "GloVe 300d (~376 MB)",
 }
 _SPLIT = re.compile(r"[,\s]+")
 
 
 @lru_cache(maxsize=None)
-def load_glove(name: str = DEFAULT_MODEL):
-    import gensim.downloader as api
+def _load_glove(name: str):
+    from pathlib import Path
 
-    return api.load(name)
+    import gensim.downloader as api
+    from gensim.models import KeyedVectors
+
+    # Binary mmap cache
+    cache = Path(api.BASE_DIR) / f"{name}.kv"
+    if cache.exists():
+        return KeyedVectors.load(str(cache), mmap="r")
+    kv = api.load(name)
+    kv.fill_norms()
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    kv.save(str(cache))
+    return kv
+
+
+def load_glove(name: str = DEFAULT_MODEL):
+    return _load_glove(name)
 
 
 def normalize(word: str) -> str:
@@ -29,6 +45,19 @@ def normalize(word: str) -> str:
 def parse_words(text: str) -> list[str]:
     # Dedupe, keep order
     return list(dict.fromkeys(w for w in map(normalize, _SPLIT.split(text)) if w))
+
+
+def parse_groups(text: str) -> tuple[list[str], list[str]]:
+    # Group per line
+    seen: dict[str, str] = {}
+    for line in text.splitlines():
+        if not line.strip():
+            continue
+        group, _, rest = line.partition(":") if ":" in line else ("words", "", line)
+        label = group.strip() or "words"
+        for w in parse_words(rest):
+            seen.setdefault(w, label)
+    return list(seen), list(seen.values())
 
 
 @dataclass
