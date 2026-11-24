@@ -116,11 +116,19 @@ def project_2d(vectors: np.ndarray, method: str = "pca", random_state: int = 42)
     if n < 2:
         return np.zeros((n, 2), dtype=np.float32)
     if method == "umap":
+        if n < 3:
+            raise RuntimeError("UMAP needs at least three points.")
         try:
             import umap
         except ImportError as exc:
             raise RuntimeError("UMAP needs `pip install umap-learn`.") from exc
-        reducer = umap.UMAP(n_components=2, n_neighbors=max(2, min(15, n - 1)), metric="cosine", random_state=random_state)
+        reducer = umap.UMAP(
+            n_components=2,
+            n_neighbors=min(15, n - 1),
+            metric="cosine",
+            init="random" if n <= 3 else "spectral",
+            random_state=random_state,
+        )
         return reducer.fit_transform(vectors)
     from sklearn.decomposition import PCA
 

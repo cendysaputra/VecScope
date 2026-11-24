@@ -51,11 +51,17 @@ def _check_vocab(kv, words: list[str]) -> list[str]:
 def unit_vectors(kv, words: list[str]) -> np.ndarray:
     # Single unit gather
     idx = [kv.key_to_index[w] for w in _check_vocab(kv, words)]
-    return kv.get_normed_vectors()[idx] if idx else np.empty((0, kv.vector_size), np.float32)
+    if not idx:
+        return np.empty((0, kv.vector_size), np.float32)
+    kv.fill_norms()
+    return kv.vectors[idx] / kv.norms[idx, None]
 
 
 def nearest(kv, word: str, topn: int = 10) -> list[tuple[str, float]]:
-    return kv.most_similar(_check_vocab(kv, [word])[0], topn=topn)
+    words = _check_vocab(kv, [word])
+    if not words:
+        raise ValueError("Enter a word to find its nearest neighbours.")
+    return kv.most_similar(words[0], topn=topn)
 
 
 def analogy(kv, positive: list[str], negative: list[str], topn: int = 10) -> list[tuple[str, float]]:

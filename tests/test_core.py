@@ -9,11 +9,12 @@ from src.similarity import (
     center_unit,
     cosine,
     cosine_matrix,
+    nearest,
     pairwise_scores,
     parse_analogy,
     unit_vectors,
 )
-from src.tokenize import DEFAULT_PAIR, tokenize
+from src.tokenize import DEFAULT_PAIR, tokenize, tokenize_tiktoken
 from src.visualize import project_2d
 
 SENTENCE = "Tokenization isn't magic: unbelievably, GPT-2 and BERT split words differently!"
@@ -91,3 +92,36 @@ def test_eval_results():
     assert round(clip_res["ensemble_accuracy"], 1) == 89.8
 
 
+
+def test_gpt2_treats_special_marker_as_literal_text():
+    marker = "<|endoftext|>"
+    result = tokenize_tiktoken(marker)
+    assert result.count > 1
+    assert "".join(result.tokens) == marker
+
+
+def test_nearest_requires_a_word():
+    with pytest.raises(ValueError, match="Enter a word"):
+        nearest(None, "  ")
+
+
+def test_unit_vectors_only_normalize_requested_words(monkeypatch):
+    from gensim.models import KeyedVectors
+
+    vectors = KeyedVectors(vector_size=2)
+    vectors.add_vectors(["first", "second"], np.array([[3., 4.], [0., 2.]]))
+
+    def reject_full_normalization():
+        pytest.fail("Requested normalized vectors for the entire vocabulary")
+
+    monkeypatch.setattr(vectors, "get_normed_vectors", reject_full_normalization)
+    np.testing.assert_allclose(unit_vectors(vectors, [" SECOND ", "first", "second"]),
+                               [[0., 1.], [0.6, 0.8], [0., 1.]])
+
+
+def test_umap_handles_small_projections():
+    with pytest.raises(RuntimeError, match="at least three"):
+        project_2d(np.eye(2), "umap")
+    pytest.importorskip("umap")
+    points = project_2d(np.eye(3), "umap")
+    assert points.shape == (3, 2) and np.isfinite(points).all()

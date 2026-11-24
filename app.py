@@ -247,7 +247,7 @@ with tabs[2]:
         try:
             nn = pd.DataFrame(nearest(kv, nn_word, 10), columns=["word", "cosine"])
             st.dataframe(nn, hide_index=True, width="stretch", column_config={"cosine": st.column_config.ProgressColumn("cosine", min_value=0, max_value=1, format="%.3f")})
-        except OOVError as e:
+        except (OOVError, ValueError) as e:
             st.warning(str(e), icon=":material/help:")
 
 # Map tab
