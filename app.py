@@ -2,14 +2,26 @@ from __future__ import annotations
 
 import html
 import io
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import streamlit as st
 
 from src import clip as clipmod
-from src.embeddings import DEFAULT_MODEL, MODELS, get_vectors, load_glove, parse_words
-from src.similarity import OOVError, analogy, analogy_vector, cosine_matrix, nearest, parse_analogy
+from src.embeddings import DEFAULT_MODEL, MODELS, get_vectors, load_glove, parse_groups, parse_words
+from src.similarity import (
+    OOVError,
+    analogy,
+    analogy_vector,
+    center_unit,
+    cosine_matrix,
+    l2_normalize,
+    nearest,
+    pairwise_scores,
+    parse_analogy,
+    unit_vectors,
+)
 from src.tokenize import DEFAULT_PAIR, TOKENIZERS, tokenize
 from src.visualize import diverging_hex, palette, project_2d, scatter_2d, similarity_heatmap, vector_strips
 
@@ -71,7 +83,7 @@ def clip_model():
 
 @st.cache_data(show_spinner=False)
 def read_samples(stamp: tuple[tuple[str, float], ...]) -> list[bytes]:
-    return [open(path, "rb").read() for path, _ in stamp]
+    return [Path(path).read_bytes() for path, _ in stamp]
 
 
 @st.cache_data(show_spinner=False)
@@ -86,6 +98,11 @@ def clip_embed_images(blobs: tuple[bytes, ...]) -> np.ndarray:
 def clip_embed_texts(texts: tuple[str, ...]) -> np.ndarray:
     clip_model()
     return clipmod.embed_texts(list(texts))
+
+
+@st.cache_data(show_spinner=False)
+def cached_project_2d(vectors: np.ndarray, method: str) -> np.ndarray:
+    return project_2d(vectors, method)
 
 
 @st.cache_data(show_spinner=False)
@@ -132,26 +149,6 @@ def warn_missing(missing: list[str]) -> None:
             "GloVe is lowercase English; try a more common spelling.",
             icon=":material/help:",
         )
-
-
-def center_unit(v: np.ndarray) -> np.ndarray:
-    # Center, renormalize
-    v = v - v.mean(0)
-    return v / np.clip(np.linalg.norm(v, axis=1, keepdims=True), 1e-12, None)
-
-
-def parse_groups(text: str) -> tuple[list[str], list[str]]:
-    # "group: w1, w2"
-    words, groups = [], []
-    for line in text.splitlines():
-        if not line.strip():
-            continue
-        group, _, rest = line.partition(":") if ":" in line else ("words", "", line)
-        for w in parse_words(rest):
-            if w not in words:
-                words.append(w)
-                groups.append(group.strip() or "words")
-    return words, groups
 
 
 st.markdown(CSS, unsafe_allow_html=True)
@@ -243,16 +240,14 @@ with tabs[2]:
     if len(look.words) >= 2:
         sim = cosine_matrix(look.vectors)
         left.plotly_chart(similarity_heatmap(look.words, sim, mode=MODE), width="stretch")
-        iu = np.triu_indices(len(look.words), 1)
-        pairs = pd.DataFrame({"word A": np.array(look.words)[iu[0]], "word B": np.array(look.words)[iu[1]], "cosine": sim[iu].round(4)})
-        right.dataframe(pairs.sort_values("cosine", ascending=False), hide_index=True, width="stretch", height=380)
+        right.dataframe(pd.DataFrame(pairwise_scores(look.words, sim)), hide_index=True, width="stretch", height=380)
     with st.container(border=True):
         st.markdown("**Nearest neighbours**")
         nn_word = st.text_input("Word", "king", key="nn_word")
         try:
             nn = pd.DataFrame(nearest(kv, nn_word, 10), columns=["word", "cosine"])
             st.dataframe(nn, hide_index=True, width="stretch", column_config={"cosine": st.column_config.ProgressColumn("cosine", min_value=0, max_value=1, format="%.3f")})
-        except OOVError as e:
+        except (OOVError, ValueError) as e:
             st.warning(str(e), icon=":material/help:")
 
 # Map tab
@@ -265,7 +260,7 @@ with tabs[3]:
     if len(look.words) >= 3:
         group_of = dict(zip(words, groups))
         try:
-            pts = project_2d(look.vectors, projection)
+            pts = cached_project_2d(look.vectors, projection)
             st.plotly_chart(
                 scatter_2d(
                     look.words, pts, [group_of[w] for w in look.words],
@@ -302,7 +297,7 @@ with tabs[4]:
         )
         vec = analogy_vector(kv, pos, neg)
         operands = pos + neg
-        unit = np.vstack([kv.get_vector(w, norm=True) for w in operands] + [vec / np.linalg.norm(vec), kv.get_vector(res[0][0], norm=True)])
+        unit = np.vstack([unit_vectors(kv, operands), l2_normalize(vec), unit_vectors(kv, [res[0][0]])])
         st.plotly_chart(
             vector_strips(operands + [f"= {expr}", f"top: {res[0][0]}"], unit, title="Unit vectors: operands, result, top answer", mode=MODE),
             width="stretch",
@@ -370,7 +365,7 @@ with tabs[5]:
         )
         all_vecs = np.vstack([center_unit(txt_vecs), center_unit(img_vecs)] if close_gap else [txt_vecs, img_vecs])
         try:
-            pts = project_2d(all_vecs, projection)
+            pts = cached_project_2d(all_vecs, projection)
             st.plotly_chart(
                 scatter_2d(
                     prompts + names, pts, ["text"] * len(prompts) + ["image"] * len(names),

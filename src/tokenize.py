@@ -44,7 +44,7 @@ def _hf_tokenizer(name: str):
 
 def tokenize_tiktoken(text: str, encoding: str = "gpt2") -> TokenizationResult:
     enc = _tiktoken_encoding(encoding)
-    ids = enc.encode(text)
+    ids = enc.encode_ordinary(text)
     # Partial UTF-8 safe
     tokens = [enc.decode_single_token_bytes(i).decode("utf-8", errors="replace").translate(_VISIBLE) for i in ids]
     return TokenizationResult(f"tiktoken:{encoding}", tokens, ids)

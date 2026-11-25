@@ -116,11 +116,19 @@ def project_2d(vectors: np.ndarray, method: str = "pca", random_state: int = 42)
     if n < 2:
         return np.zeros((n, 2), dtype=np.float32)
     if method == "umap":
+        if n < 3:
+            raise RuntimeError("UMAP needs at least three points.")
         try:
             import umap
         except ImportError as exc:
             raise RuntimeError("UMAP needs `pip install umap-learn`.") from exc
-        reducer = umap.UMAP(n_components=2, n_neighbors=max(2, min(15, n - 1)), metric="cosine", random_state=random_state)
+        reducer = umap.UMAP(
+            n_components=2,
+            n_neighbors=min(15, n - 1),
+            metric="cosine",
+            init="random" if n <= 3 else "spectral",
+            random_state=random_state,
+        )
         return reducer.fit_transform(vectors)
     from sklearn.decomposition import PCA
 
@@ -137,20 +145,21 @@ def scatter_2d(
     mode: str = "light",
 ) -> go.Figure:
     pal = palette(mode)
-    groups = groups or ["words"] * len(labels)
+    groups_arr = np.asarray(groups or ["words"] * len(labels))
+    labels_arr = np.asarray(labels)
     symbols = symbols or {}
     fig = go.Figure()
-    for k, g in enumerate(dict.fromkeys(groups)):
-        idx = [i for i, gg in enumerate(groups) if gg == g]
+    for k, g in enumerate(dict.fromkeys(groups_arr.tolist())):
+        mask = groups_arr == g
         # Fixed slot order
         color = pal["categorical"][k] if k < len(pal["categorical"]) else None
         fig.add_trace(
             go.Scatter(
-                x=points[idx, 0],
-                y=points[idx, 1],
+                x=points[mask, 0],
+                y=points[mask, 1],
                 mode="markers+text",
                 name=g,
-                text=[labels[i] for i in idx],
+                text=labels_arr[mask],
                 textposition="top center",
                 textfont=dict(color=pal["ink"], size=12),
                 marker=dict(size=11, color=color, symbol=symbols.get(g, "circle"), line=dict(width=2, color=pal["surface"])),
