@@ -2,6 +2,8 @@
 
 **vector + scope**: a small Streamlit app for looking inside language models. Type a sentence and see how it gets cut into tokens, how each word becomes a list of numbers, and how those numbers capture meaning. Upload an image and see it land in the same vector space as text.
 
+![VecScope demo: tokens, vector strips, 2D map, analogy, CLIP search](docs/demo.gif)
+
 ![VecScope, light theme](docs/screenshots/overview.png)
 
 The app follows the system light/dark setting (switchable in the app menu):
@@ -74,7 +76,7 @@ python -m pytest -q
 
 ## Evidence
 
-Numbers below come from `python scripts/evidence.py`. Screenshots come from `node scripts/screenshots.js` against a running app.
+Numbers below come from `python scripts/evidence.py`. Screenshots come from `node scripts/screenshots.js` and the demo GIF from `node scripts/demo_gif.js` (needs ffmpeg), both against a running app.
 
 ### Tokens: GPT-2 vs BERT
 
@@ -163,7 +165,7 @@ src/embeddings.py      GloVe loading and lookup
 src/similarity.py      cosine, nearest neighbours, analogy
 src/visualize.py       Plotly strips, heatmaps, PCA/UMAP scatter
 src/clip.py            CLIP text and image embeddings
-scripts/               sample download, evidence, screenshots
+scripts/               sample download, evidence, screenshots, demo GIF
 tests/                 fixed examples from the plan
 ```
 

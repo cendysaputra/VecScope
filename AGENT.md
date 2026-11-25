@@ -42,6 +42,10 @@ python scripts/evidence.py
 node scripts/screenshots.js
 ```
 
+```bash
+node scripts/demo_gif.js
+```
+
 ## Rules for every change
 
 ### 1. Optimize
