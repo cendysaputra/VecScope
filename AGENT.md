@@ -49,6 +49,10 @@ python eval/clip_cifar10.py
 node scripts/screenshots.js
 ```
 
+```bash
+node scripts/demo_gif.js
+```
+
 ## Rules for every change
 
 ### 1. Optimize
